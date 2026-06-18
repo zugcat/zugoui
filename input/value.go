@@ -40,6 +40,11 @@ func Element(id string) (js.Value, error) {
 	return elem, nil
 }
 
+// CreateElement creates an element
+func CreateElement(typ string) js.Value {
+	return document.Call("createElement", typ)
+}
+
 // Value does a best effort conversion from the input or fieldgroup's buttons to the intended value
 func Value(elem js.Value) js.Value {
 	typ := elem.Get("type")

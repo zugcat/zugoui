@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"slices"
 
 	"github.com/coder/websocket"
 
@@ -76,12 +77,36 @@ func handleRPC(w http.ResponseWriter, r *http.Request) {
 	}
 	defer c.Release()
 
+	toppingIDs := []string{
+		"tuna fish",
+		"peanut butter",
+		"chocolate chips",
+		"Nutella",
+		"raisins",
+		"eggs",
+		"green olives",
+		"broccoli",
+		"onion powder",
+		"rock salt",
+	}
+
+	controller.AddData(
+		c,
+		"pizza",
+		[]string{
+			"toppings.0.topping",
+			"toppings.1.topping",
+			"toppings.2.topping",
+		},
+		slices.All(toppingIDs),
+	)
+
 	m := &model.Pizza{
 		Size: "medium",
 		Toppings: []*model.Topping{
 			{
 				Show:    true,
-				Topping: "broccoli",
+				Topping: 2,
 			},
 		},
 	}
@@ -91,21 +116,6 @@ func handleRPC(w http.ResponseWriter, r *http.Request) {
 
 	o := controllers.New(&m)
 	defer o.Release()
-
-	/*
-		p := observable.NewPathObserver("*", o)
-		p.AddObserver("", observable.NewActionObserver(func(string, any) {
-			fmt.Printf("PIZZA: size=%s\n", m.Size)
-			for n, topping := range m.Toppings {
-				if topping == nil {
-					fmt.Printf("\t%d is nil\n", n)
-					continue
-				}
-				fmt.Printf("\t%d: %s\n", n, topping.Topping)
-			}
-			fmt.Printf("\n")
-		}))
-	*/
 
 	toppingsView := o.Value("Toppings").(*scroll.Scroll)
 	toppings := toppingsView.Source().(observable.MutableSource)

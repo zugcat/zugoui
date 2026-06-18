@@ -34,3 +34,17 @@ type NewClickBindingRes struct {
 type UnbindReq struct {
 	Handle int64 // binding handle
 }
+
+// ClearDataReq ClearData request
+type ClearDataReq struct {
+	FormID     string
+	ElementIDs []string
+}
+
+// AddDataReq AddData request
+type AddDataReq struct {
+	FormID     string
+	ElementIDs []string
+	Key        any
+	Value      string
+}

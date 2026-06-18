@@ -111,6 +111,32 @@ func (o Observer) SetValue(key string, value any) {
 	}
 }
 
+// ClearData stub for function [jsrpc.Browser.ClearData]
+func (b Browser) ClearData(formID string, elementIDs []string) error {
+	return b.Call(
+		"Browser.ClearData",
+		&rpctypes.ClearDataReq{
+			FormID:     formID,
+			ElementIDs: elementIDs,
+		},
+		nil,
+	)
+}
+
+// AddData stub for function [jsrpc.Browser.AddData]
+func (b Browser) AddData(formID string, elementIDs []string, key any, value string) error {
+	return b.Call(
+		"Browser.AddData",
+		&rpctypes.AddDataReq{
+			FormID:     formID,
+			ElementIDs: elementIDs,
+			Key:        key,
+			Value:      value,
+		},
+		nil,
+	)
+}
+
 // InsertValueAt stub for function [jsrpc.Browser.InsertValueAt]
 func (o Observer) InsertValueAt(at int, value any) {
 	// unsupported
