@@ -2,6 +2,7 @@
 package controller
 
 import (
+	"iter"
 	"strings"
 	"sync"
 
@@ -151,5 +152,20 @@ func (c *Controller) BindValues(
 	}
 
 	o.AddObserver("", wsrpc.Observer{Browser: c.Browser, Handle: handle})
+	return nil
+}
+
+// AddData clears and populates a data source from an iterator
+func AddData[K any](c *Controller, formID string, elementIDs []string, source iter.Seq2[K, string]) error {
+	if err := c.Browser.ClearData(formID, elementIDs); err != nil {
+		return err
+	}
+
+	for k, v := range source {
+		if err := c.Browser.AddData(formID, elementIDs, k, v); err != nil {
+			return err
+		}
+	}
+
 	return nil
 }

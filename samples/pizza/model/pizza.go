@@ -7,8 +7,8 @@ import (
 )
 
 type Topping struct {
-	Topping string `bind:"topping"`
-	Show    bool   `bind:">hidden;isZero"`
+	Topping int  `bind:"topping"`
+	Show    bool `bind:">hidden;isZero"`
 }
 
 type Pizza struct {

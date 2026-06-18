@@ -231,6 +231,47 @@ func (b *Browser) NewClickBinding(req *rpctypes.NewClickBindingReq, res *rpctype
 	return nil
 }
 
+func eachElement(anchor string, elements []string, f func(js.Value) error) error {
+	if len(elements) == 0 {
+		obj, err := input.Element(anchor)
+		if err != nil {
+			return err
+		}
+		return f(obj)
+	}
+
+	for _, elem := range elements {
+		obj, err := input.Element(anchor + "." + elem)
+		if err != nil {
+			return err
+		}
+		if err := f(obj); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// ClearOptions clears all options from an element
+func (b *Browser) ClearData(req *rpctypes.ClearDataReq, _ *bool) error {
+	return eachElement(req.FormID, req.ElementIDs, func(obj js.Value) error {
+		obj.Set("length", 0)
+		return nil
+	})
+}
+
+// AddData adds a data option to an element
+func (b *Browser) AddData(req *rpctypes.AddDataReq, _ *bool) error {
+	return eachElement(req.FormID, req.ElementIDs, func(obj js.Value) error {
+		option := input.CreateElement("option")
+		option.Set("value", req.Key)
+		option.Set("textContent", req.Value)
+		obj.Call("appendChild", option)
+		return nil
+	})
+}
+
 // Mutable rpc handlers
 
 func (b *Browser) SetValue(req *rpctypes.SetValueReq, _ *bool) error {
