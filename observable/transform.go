@@ -31,6 +31,7 @@ func init() {
 	RegisterTransformer("isNil", &isNil{})
 	RegisterTransformer("isZero", &isZero{})
 	RegisterTransformer("len", &length{})
+	RegisterTransformer("oneWay", &oneWay{})
 }
 
 // BaseTransform gives base level functionality
@@ -149,6 +150,20 @@ func (_ length) NewTransformer() Transformer {
 				}
 				return 0
 			},
+			nil,
+		),
+	}
+}
+
+// oneWay prevents a mutiple source updating from its destination binding
+type oneWay struct {
+	*BaseTransform
+}
+
+func (_ oneWay) NewTransformer() Transformer {
+	return oneWay{
+		BaseTransform: NewBaseTransform(
+			func(value any) any { return value },
 			nil,
 		),
 	}

@@ -84,11 +84,22 @@ func Set(elem js.Value, property string, value js.Value) bool {
 
 	switch typ.String() {
 	case "fieldset":
-		v := elem.Call("querySelectorAll", fmt.Sprintf(`input[type="radio"]:not([value="%v"])`, value))
+		var valueStr string
+
+		switch value.Type() {
+		case js.TypeBoolean:
+			valueStr = fmt.Sprintf("%t", value.Truthy())
+		case js.TypeNumber:
+			valueStr = fmt.Sprintf("%d", value.Int())
+		default:
+			valueStr = value.String()
+		}
+
+		v := elem.Call("querySelectorAll", fmt.Sprintf(`input[type="radio"]:not([value="%s"])`, valueStr))
 		for elem := range jsglue.Iter(v) {
 			elem.Set("checked", false)
 		}
-		v = elem.Call("querySelector", fmt.Sprintf(`input[type="radio"][value="%v"]`, value))
+		v = elem.Call("querySelector", fmt.Sprintf(`input[type="radio"][value="%s"]`, valueStr))
 		if v.IsNull() {
 			return false
 		}
