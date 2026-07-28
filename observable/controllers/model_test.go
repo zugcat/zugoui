@@ -203,3 +203,13 @@ func TestSetWithController(t *testing.T) {
 
 	assert.Equal(t, f1.Bars[0].Field1, f2.Bars[0].Field1)
 }
+
+func TestSetNilValue(t *testing.T) {
+	type foo struct {
+		Field string
+	}
+	f := &foo{Field: "value"}
+	m := controllers.New(f)
+	m.SetValue("Field", nil)
+	assert.Equal(t, "", f.Field)
+}

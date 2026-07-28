@@ -33,6 +33,10 @@ func TestXforms(t *testing.T) {
 	x = observable.NewTransformer("len")
 	require.NotNil(t, x)
 	assert.Equal(t, 3, x.Get(m.Value("Field1")))
+
+	x = observable.NewTransformer("oneWay")
+	require.NotNil(t, x)
+	assert.Equal(t, "abc", x.Get(m.Value("Field1")))
 }
 
 type cToF struct {

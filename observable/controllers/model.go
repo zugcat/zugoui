@@ -314,6 +314,10 @@ func (m *Model) SetValue(key string, value any) {
 			return
 		}
 
+		if !valueValue.IsValid() {
+			valueValue = reflect.Zero(keyValue.Type())
+		}
+
 		if valueValue.Type() != keyValue.Type() {
 			valueValue = valueValue.Convert(keyValue.Type())
 		}
