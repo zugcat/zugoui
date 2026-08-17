@@ -10,6 +10,7 @@ import (
 	"net/url"
 	"os"
 	"path"
+	"strings"
 	"sync"
 	"syscall/js"
 	"time"
@@ -57,7 +58,10 @@ func Main(ctx context.Context, endpoint string) (err error) {
 
 	// from the location this page loaded, connect back at the same path+endpoint
 	window := js.Global().Get("window").Get("location")
-	wspath := path.Join(window.Get("pathname").String(), endpoint)
+	wspath := endpoint
+	if !strings.HasPrefix(wspath, "/") {
+		wspath = path.Join(window.Get("pathname").String(), wspath)
+	}
 	u, err := url.Parse(window.Get("origin").String() + wspath)
 	if err != nil {
 		return err
