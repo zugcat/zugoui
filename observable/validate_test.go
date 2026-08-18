@@ -70,3 +70,31 @@ func TestValidate(t *testing.T) {
 	assert.ErrorIs(t, ve["Field1"], errEmpty)
 	assert.ErrorIs(t, ve["Submodel.Field1"], errRange)
 }
+
+type bar struct {
+	Field string
+	err   error
+}
+
+func (b bar) ValidateModel() error { return b.err }
+
+type foo struct {
+	Bar bar
+}
+
+func (f foo) ValidateModel() error { return nil }
+
+func TestRecursiveValidate(t *testing.T) {
+	f := &foo{}
+	s := controllers.New(f)
+	assert.NoError(t, observable.ValidateSource(s))
+
+	errNope := errors.New("nope")
+	f.Bar.err = errNope
+	err := observable.ValidateSource(s)
+	assert.ErrorIs(t, err, errNope)
+
+	var errs observable.ValidationError
+	require.ErrorAs(t, err, &errs)
+	assert.ErrorIs(t, errs["Bar"], errNope)
+}
