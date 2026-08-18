@@ -37,11 +37,11 @@ func ValidateSource(s Source) error {
 		return nil
 	}
 
-	var result ValidationError
+	result := make(ValidationError)
 	mv, ok := model.Interface().(ModelValidator)
 	if ok {
 		err := mv.ValidateModel()
-		if errors, ok := err.(ValidationError); ok {
+		if errors, ok := errors.AsType[ValidationError](err); ok {
 			result = errors
 		} else if err != nil {
 			return err
@@ -50,15 +50,17 @@ func ValidateSource(s Source) error {
 
 	for _, key := range s.Keys() {
 		if s, ok := s.Value(key).(Source); ok {
-			keyResult := ValidateSource(s).(ValidationError)
-			if len(keyResult) == 0 {
-				continue
-			}
-			if result == nil {
-				result = make(map[string]error)
-			}
-			for k, v := range keyResult {
-				result[key+"."+k] = v
+			if err := ValidateSource(s); err != nil {
+				if keyResult, ok := errors.AsType[ValidationError](err); ok {
+					if len(keyResult) == 0 {
+						continue
+					}
+					for k, v := range keyResult {
+						result[key+"."+k] = v
+					}
+				} else {
+					result[key] = err
+				}
 			}
 		}
 	}
