@@ -60,6 +60,8 @@ func TestValidate(t *testing.T) {
 	}
 
 	s := controllers.New(m)
+	defer s.Release()
+
 	err := observable.ValidateSource(s)
 	require.Error(t, err)
 	t.Logf("%v (expected)", err)
@@ -87,6 +89,8 @@ func (f foo) ValidateModel() error { return nil }
 func TestRecursiveValidate(t *testing.T) {
 	f := &foo{}
 	s := controllers.New(f)
+	defer s.Release()
+
 	assert.NoError(t, observable.ValidateSource(s))
 
 	errNope := errors.New("nope")
@@ -97,4 +101,17 @@ func TestRecursiveValidate(t *testing.T) {
 	var errs observable.ValidationError
 	require.ErrorAs(t, err, &errs)
 	assert.ErrorIs(t, errs["Bar"], errNope)
+}
+
+func TestNonValidate(t *testing.T) {
+	type plainBar struct {
+		Field string
+	}
+	type plainFoo struct {
+		Bar plainBar
+	}
+	s := controllers.New(&plainFoo{})
+	defer s.Release()
+
+	assert.NoError(t, observable.ValidateSource(s))
 }

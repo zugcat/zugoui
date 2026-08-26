@@ -3,7 +3,9 @@
 package jsrpc
 
 import (
+	"fmt"
 	"net/rpc"
+	"os"
 
 	"github.com/CCorderZugcat/zugoui/wsrpc/rpctypes"
 )
@@ -21,26 +23,34 @@ type Observer struct {
 
 // Action client side stub for function [wsrpc.Server.Action]
 func (s Server) Action(action string) {
-	go s.Call(
-		"Server.Action",
-		&rpctypes.ActionReq{
-			Action: action,
-		},
-		nil,
-	)
+	go func() {
+		if err := s.Call(
+			"Server.Action",
+			&rpctypes.ActionReq{
+				Action: action,
+			},
+			nil,
+		); err != nil {
+			fmt.Fprintf(os.Stderr, "Action(%s:%v\n", action, err)
+		}
+	}()
 }
 
 // SetValue client stub for function [wsrpc.Server.SetValue]
 func (o Observer) SetValue(key string, value any) {
-	go o.Call(
-		"Server.SetValue",
-		&rpctypes.SetValueReq{
-			Action: o.Action,
-			Key:    key,
-			Value:  value,
-		},
-		nil,
-	)
+	go func() {
+		if err := o.Call(
+			"Server.SetValue",
+			&rpctypes.SetValueReq{
+				Action: o.Action,
+				Key:    key,
+				Value:  value,
+			},
+			nil,
+		); err != nil {
+			fmt.Fprintf(os.Stderr, "SetValue(%s:%v):%v\n", key, value, err)
+		}
+	}()
 }
 
 // InsertValueAt stub for function [wsrpc.Server.InsertValueAt]
