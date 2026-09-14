@@ -4,8 +4,8 @@ import (
 	"reflect"
 	"strconv"
 
-	"github.com/CCorderZugcat/zugoui/observable"
-	"github.com/CCorderZugcat/zugoui/observable/controllers"
+	"github.com/zugcat/zugoui/observable"
+	"github.com/zugcat/zugoui/observable/controllers"
 )
 
 // Scroll controls a window of any array or slice

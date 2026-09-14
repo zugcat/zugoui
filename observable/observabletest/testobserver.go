@@ -1,6 +1,6 @@
 package observabletest
 
-import "github.com/CCorderZugcat/zugoui/observable"
+import "github.com/zugcat/zugoui/observable"
 
 type Observer struct {
 	observable.NullObserver

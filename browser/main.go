@@ -15,8 +15,8 @@ import (
 	"syscall/js"
 	"time"
 
-	"github.com/CCorderZugcat/zugoui/jsglue"
-	"github.com/CCorderZugcat/zugoui/jsrpc"
+	"github.com/zugcat/zugoui/jsglue"
+	"github.com/zugcat/zugoui/jsrpc"
 )
 
 // Main runs the main loop of the browser side of things.

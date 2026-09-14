@@ -1,6 +1,6 @@
-module github.com/CCorderZugcat/zugoui
+module github.com/zugcat/zugoui
 
-go 1.26.0
+go 1.27.1
 
 require (
 	github.com/andybalholm/brotli v1.2.0

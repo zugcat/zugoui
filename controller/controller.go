@@ -6,8 +6,8 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/CCorderZugcat/zugoui/observable"
-	"github.com/CCorderZugcat/zugoui/wsrpc"
+	"github.com/zugcat/zugoui/observable"
+	"github.com/zugcat/zugoui/wsrpc"
 )
 
 // Controller handles the interaction of observable bindings between the model and the browser.

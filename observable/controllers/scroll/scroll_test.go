@@ -6,9 +6,9 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/CCorderZugcat/zugoui/observable"
-	"github.com/CCorderZugcat/zugoui/observable/controllers"
-	"github.com/CCorderZugcat/zugoui/observable/controllers/scroll"
+	"github.com/zugcat/zugoui/observable"
+	"github.com/zugcat/zugoui/observable/controllers"
+	"github.com/zugcat/zugoui/observable/controllers/scroll"
 )
 
 type item struct {

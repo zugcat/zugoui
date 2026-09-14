@@ -12,7 +12,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/CCorderZugcat/zugoui/gzasm"
+	"github.com/zugcat/zugoui/gzasm"
 )
 
 func Serve(ctx context.Context, l net.Listener, fsys fs.FS, mux *http.ServeMux) error {

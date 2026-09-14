@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/CCorderZugcat/zugoui/jstypes"
+	"github.com/zugcat/zugoui/jstypes"
 )
 
 type myString string

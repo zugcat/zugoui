@@ -11,8 +11,8 @@ import (
 
 	"github.com/coder/websocket"
 
-	"github.com/CCorderZugcat/zugoui/jsrpc"
-	"github.com/CCorderZugcat/zugoui/wsconn"
+	"github.com/zugcat/zugoui/jsrpc"
+	"github.com/zugcat/zugoui/wsconn"
 )
 
 func connection(

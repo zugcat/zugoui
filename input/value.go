@@ -8,7 +8,7 @@ import (
 	"strings"
 	"syscall/js"
 
-	"github.com/CCorderZugcat/zugoui/jsglue"
+	"github.com/zugcat/zugoui/jsglue"
 )
 
 var ErrNoElement = errors.New("element not found")

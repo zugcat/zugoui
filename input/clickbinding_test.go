@@ -9,8 +9,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/CCorderZugcat/zugoui/formtest"
-	"github.com/CCorderZugcat/zugoui/input"
+	"github.com/zugcat/zugoui/formtest"
+	"github.com/zugcat/zugoui/input"
 )
 
 //go:embed testdata/*

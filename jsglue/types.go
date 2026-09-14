@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"syscall/js"
 
-	"github.com/CCorderZugcat/zugoui/observable"
+	"github.com/zugcat/zugoui/observable"
 )
 
 var object = js.Global().Get("Object")

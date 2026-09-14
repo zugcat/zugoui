@@ -6,9 +6,9 @@ import (
 	"log/slog"
 	"net/rpc"
 
-	"github.com/CCorderZugcat/zugoui/jstypes"
-	"github.com/CCorderZugcat/zugoui/observable"
-	"github.com/CCorderZugcat/zugoui/wsrpc/rpctypes"
+	"github.com/zugcat/zugoui/jstypes"
+	"github.com/zugcat/zugoui/observable"
+	"github.com/zugcat/zugoui/wsrpc/rpctypes"
 )
 
 var ErrBadType = errors.New("bad type")
