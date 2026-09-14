@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"net/mail"
 
-	"github.com/CCorderZugcat/zugoui/observable"
+	"github.com/zugcat/zugoui/observable"
 )
 
 var ErrRequired = errors.New("required")

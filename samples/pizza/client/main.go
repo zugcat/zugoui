@@ -8,8 +8,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/CCorderZugcat/zugoui/browser"
-	_ "github.com/CCorderZugcat/zugoui/samples/pizza/model"
+	"github.com/zugcat/zugoui/browser"
+	_ "github.com/zugcat/zugoui/samples/pizza/model"
 )
 
 func main() {

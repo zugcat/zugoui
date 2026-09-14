@@ -7,9 +7,9 @@ import (
 	"maps"
 	"syscall/js"
 
-	"github.com/CCorderZugcat/zugoui/jsglue"
-	"github.com/CCorderZugcat/zugoui/jstypes"
-	"github.com/CCorderZugcat/zugoui/observable"
+	"github.com/zugcat/zugoui/jsglue"
+	"github.com/zugcat/zugoui/jstypes"
+	"github.com/zugcat/zugoui/observable"
 )
 
 // form is an instance of a form

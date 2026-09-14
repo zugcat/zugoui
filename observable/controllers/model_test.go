@@ -7,9 +7,9 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/CCorderZugcat/zugoui/observable"
-	"github.com/CCorderZugcat/zugoui/observable/controllers"
-	"github.com/CCorderZugcat/zugoui/observable/observabletest"
+	"github.com/zugcat/zugoui/observable"
+	"github.com/zugcat/zugoui/observable/controllers"
+	"github.com/zugcat/zugoui/observable/observabletest"
 )
 
 func TestMapObserver(t *testing.T) {

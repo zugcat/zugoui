@@ -7,7 +7,7 @@ import (
 	"slices"
 	"syscall/js"
 
-	"github.com/CCorderZugcat/zugoui/jsglue"
+	"github.com/zugcat/zugoui/jsglue"
 )
 
 var ErrClosing = errors.New("closing")

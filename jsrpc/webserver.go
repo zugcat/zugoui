@@ -7,7 +7,7 @@ import (
 	"net/rpc"
 	"os"
 
-	"github.com/CCorderZugcat/zugoui/wsrpc/rpctypes"
+	"github.com/zugcat/zugoui/wsrpc/rpctypes"
 )
 
 // Server client stub for [wsrpc.Server]

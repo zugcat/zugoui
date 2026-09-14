@@ -7,7 +7,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/CCorderZugcat/zugoui/observable"
+	"github.com/zugcat/zugoui/observable"
 )
 
 var controllers = make(map[string]func(observable.Source, []string) observable.Source)

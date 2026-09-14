@@ -14,8 +14,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/CCorderZugcat/zugoui/gzasm"
 	"github.com/andybalholm/brotli"
+	"github.com/zugcat/zugoui/gzasm"
 )
 
 func TestGZasm(t *testing.T) {

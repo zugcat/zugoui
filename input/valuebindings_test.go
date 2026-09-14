@@ -9,12 +9,12 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/CCorderZugcat/zugoui/formtest"
-	"github.com/CCorderZugcat/zugoui/input"
-	"github.com/CCorderZugcat/zugoui/jsglue"
-	"github.com/CCorderZugcat/zugoui/observable"
-	"github.com/CCorderZugcat/zugoui/observable/controllers"
-	"github.com/CCorderZugcat/zugoui/observable/controllers/scroll"
+	"github.com/zugcat/zugoui/formtest"
+	"github.com/zugcat/zugoui/input"
+	"github.com/zugcat/zugoui/jsglue"
+	"github.com/zugcat/zugoui/observable"
+	"github.com/zugcat/zugoui/observable/controllers"
+	"github.com/zugcat/zugoui/observable/controllers/scroll"
 )
 
 type sandwich struct {

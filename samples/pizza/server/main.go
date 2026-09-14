@@ -12,12 +12,12 @@ import (
 
 	"github.com/coder/websocket"
 
-	"github.com/CCorderZugcat/zugoui/controller"
-	"github.com/CCorderZugcat/zugoui/observable"
-	"github.com/CCorderZugcat/zugoui/observable/controllers"
-	"github.com/CCorderZugcat/zugoui/observable/controllers/scroll"
-	"github.com/CCorderZugcat/zugoui/samples/pizza/model"
-	"github.com/CCorderZugcat/zugoui/samples/server"
+	"github.com/zugcat/zugoui/controller"
+	"github.com/zugcat/zugoui/observable"
+	"github.com/zugcat/zugoui/observable/controllers"
+	"github.com/zugcat/zugoui/observable/controllers/scroll"
+	"github.com/zugcat/zugoui/samples/pizza/model"
+	"github.com/zugcat/zugoui/samples/server"
 )
 
 func main() {

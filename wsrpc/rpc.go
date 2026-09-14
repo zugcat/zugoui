@@ -4,8 +4,8 @@ import (
 	"errors"
 	"sync"
 
-	"github.com/CCorderZugcat/zugoui/observable"
-	"github.com/CCorderZugcat/zugoui/wsrpc/rpctypes"
+	"github.com/zugcat/zugoui/observable"
+	"github.com/zugcat/zugoui/wsrpc/rpctypes"
 )
 
 var (

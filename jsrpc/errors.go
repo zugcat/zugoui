@@ -6,8 +6,8 @@ import (
 	"sync/atomic"
 	"syscall/js"
 
-	"github.com/CCorderZugcat/zugoui/jsglue"
-	"github.com/CCorderZugcat/zugoui/observable"
+	"github.com/zugcat/zugoui/jsglue"
+	"github.com/zugcat/zugoui/observable"
 )
 
 // errorSource object is a react friendly datasource for validation errors

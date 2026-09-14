@@ -3,7 +3,7 @@ package model
 import (
 	"encoding/gob"
 
-	_ "github.com/CCorderZugcat/zugoui/observable/controllers/scroll"
+	_ "github.com/zugcat/zugoui/observable/controllers/scroll"
 )
 
 type Topping struct {

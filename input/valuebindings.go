@@ -7,8 +7,8 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/CCorderZugcat/zugoui/observable"
-	"github.com/CCorderZugcat/zugoui/observable/controllers"
+	"github.com/zugcat/zugoui/observable"
+	"github.com/zugcat/zugoui/observable/controllers"
 )
 
 // ValueBindings holds multiple bindings from a single model to fields,

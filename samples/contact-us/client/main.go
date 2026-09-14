@@ -7,8 +7,8 @@ import (
 	"flag"
 	"os"
 
-	"github.com/CCorderZugcat/zugoui/browser"
-	_ "github.com/CCorderZugcat/zugoui/samples/contact-us/model"
+	"github.com/zugcat/zugoui/browser"
+	_ "github.com/zugcat/zugoui/samples/contact-us/model"
 )
 
 func main() {

@@ -14,11 +14,11 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/CCorderZugcat/zugoui/formtest"
-	"github.com/CCorderZugcat/zugoui/input"
-	"github.com/CCorderZugcat/zugoui/jsglue"
-	"github.com/CCorderZugcat/zugoui/observable/observabletest"
-	"github.com/CCorderZugcat/zugoui/wsrpc"
+	"github.com/zugcat/zugoui/formtest"
+	"github.com/zugcat/zugoui/input"
+	"github.com/zugcat/zugoui/jsglue"
+	"github.com/zugcat/zugoui/observable/observabletest"
+	"github.com/zugcat/zugoui/wsrpc"
 )
 
 //go:embed testdata/*

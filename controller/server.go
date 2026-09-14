@@ -7,8 +7,8 @@ import (
 	"github.com/coder/websocket"
 	"github.com/google/uuid"
 
-	"github.com/CCorderZugcat/zugoui/wsconn"
-	"github.com/CCorderZugcat/zugoui/wsrpc"
+	"github.com/zugcat/zugoui/wsconn"
+	"github.com/zugcat/zugoui/wsrpc"
 )
 
 // Start starts server side rpc and creates a Controller.
