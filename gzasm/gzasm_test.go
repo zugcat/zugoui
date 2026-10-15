@@ -1,3 +1,5 @@
+//go:build !js
+
 package gzasm_test
 
 import (
