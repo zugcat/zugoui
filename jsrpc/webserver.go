@@ -36,6 +36,23 @@ func (s Server) Action(action string) {
 	}()
 }
 
+// CallAction client side stub for function [wsrpc.Server.Call].
+// It blocks until the server answers, so call it off the JS event loop.
+func (s Server) CallAction(action string, args []byte) (*rpctypes.CallRes, error) {
+	res := &rpctypes.CallRes{}
+	if err := s.Client.Call(
+		"Server.Call",
+		&rpctypes.CallReq{
+			Action: action,
+			Args:   args,
+		},
+		res,
+	); err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
 // SetValue client stub for function [wsrpc.Server.SetValue]
 func (o Observer) SetValue(key string, value any) {
 	go func() {

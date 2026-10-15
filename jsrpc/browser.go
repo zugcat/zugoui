@@ -30,6 +30,20 @@ type Browser struct {
 	lck       sync.RWMutex
 	funcs     jsglue.Funcs
 	formAdded chan struct{}
+	onForm    func(name string, form *Form)
+}
+
+// Form is a model the server bound under a form name, as a headless page sees
+// it: the browser's copy of the model, which sends the page's changes on to
+// the server and receives the server's.
+type Form struct {
+	vb *valueBindings
+}
+
+// Source is the browser's copy of the model. Setting a key path on it sends
+// the change to the server.
+func (f *Form) Source() observable.MutableSource {
+	return f.vb.source
 }
 
 type valueBindings struct {
@@ -42,10 +56,15 @@ type valueBindings struct {
 func (vb *valueBindings) Release() {
 	vb.source.Release()
 	vb.up.Release()
-	vb.bindings.Release()
+	if vb.bindings != nil {
+		vb.bindings.Release()
+	}
 }
 
 func (vb *valueBindings) Rebind() {
+	if vb.bindings == nil {
+		return
+	}
 	if err := vb.bindings.Rebind(); err != nil {
 		fmt.Fprintf(os.Stderr, "rebind: %v\n", err)
 	}
@@ -61,6 +80,16 @@ func New(server *Server) *Browser {
 		formAdded: make(chan struct{}, 1), // channel size of 1 presumes one thread in host js
 	}
 
+	return b
+}
+
+// NewHeadless creates a browser side rpc service for a page that renders its
+// own DOM, such as a React page. It binds no elements: each model the server
+// binds under a form name goes to onForm instead, click bindings and data
+// lists are ignored, and the page calls actions with [Server.CallAction].
+func NewHeadless(server *Server, onForm func(name string, form *Form)) *Browser {
+	b := New(server)
+	b.onForm = onForm
 	return b
 }
 
@@ -113,21 +142,27 @@ func (b *Browser) NewValueBinding(req *rpctypes.NewValueBindingReq, res *rpctype
 	observer := Observer{b.server, req.Action}
 	up.AddObserver("", observer)
 
-	bindings, err := input.NewValueBindings(req.ElementIDs, source)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "NewValueBindings: %v\n", err)
-		return err
+	vb := &valueBindings{
+		source: source,
+		up:     up,
+		formID: req.FormID,
 	}
 
-	vb := &valueBindings{
-		source:   source,
-		up:       up,
-		bindings: bindings,
-		formID:   req.FormID,
+	if b.onForm == nil {
+		bindings, err := input.NewValueBindings(req.ElementIDs, source)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "NewValueBindings: %v\n", err)
+			return err
+		}
+		vb.bindings = bindings
 	}
 
 	res.Handle = handle
 	b.storeBindings(handle, vb)
+
+	if b.onForm != nil && req.FormID != "" {
+		b.onForm(req.FormID, &Form{vb: vb})
+	}
 
 	return nil
 }
@@ -222,6 +257,13 @@ func (b *Browser) eachBindingFor(handle int64, fn func(observable.Observer)) err
 func (b *Browser) NewClickBinding(req *rpctypes.NewClickBindingReq, res *rpctypes.NewClickBindingRes) error {
 	handle := nextID.Add(1)
 
+	if b.onForm != nil {
+		// headless: the page calls actions itself
+		res.Handle = handle
+		b.storeBindings(handle, noBinding{})
+		return nil
+	}
+
 	clickBinding := input.NewClickBinding(req.ElementID, req.Action, func(action string) {
 		b.server.Action(action)
 	})
@@ -253,8 +295,16 @@ func eachElement(anchor string, elements []string, f func(js.Value) error) error
 	return nil
 }
 
+// noBinding holds a handle that binds nothing, for headless pages
+type noBinding struct{}
+
+func (noBinding) Release() {}
+
 // ClearOptions clears all options from an element
 func (b *Browser) ClearData(req *rpctypes.ClearDataReq, _ *bool) error {
+	if b.onForm != nil {
+		return nil // headless: lists come in the model or an action's result
+	}
 	return eachElement(req.FormID, req.ElementIDs, func(obj js.Value) error {
 		obj.Set("length", 0)
 		return nil
@@ -263,6 +313,9 @@ func (b *Browser) ClearData(req *rpctypes.ClearDataReq, _ *bool) error {
 
 // AddData adds a data option to an element
 func (b *Browser) AddData(req *rpctypes.AddDataReq, _ *bool) error {
+	if b.onForm != nil {
+		return nil // headless: lists come in the model or an action's result
+	}
 	return eachElement(req.FormID, req.ElementIDs, func(obj js.Value) error {
 		option := input.CreateElement("option")
 		option.Set("value", req.Key)
