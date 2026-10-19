@@ -30,7 +30,7 @@ func endpoints(
 ) (
 	b *Browser,
 	bclient wsrpc.Browser,
-	sclient Server,
+	sclient *Server,
 	stop func(),
 ) {
 	wg := &sync.WaitGroup{}
@@ -43,8 +43,8 @@ func endpoints(
 	err := srpc.Register(server)
 	require.NoError(t, err)
 
-	sclient = Server{Client: rpc.NewClient(sp_c)} // server side client calling browser
-	b = New(&sclient)                             // browser side rpc server
+	sclient = &Server{Client: rpc.NewClient(sp_c)} // server side client calling browser
+	b = New(sclient)                               // browser side rpc server
 	brpc := rpc.NewServer()
 	err = brpc.Register(b)
 	require.NoError(t, err)

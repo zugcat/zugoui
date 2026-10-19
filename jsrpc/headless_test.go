@@ -4,6 +4,7 @@ package jsrpc
 
 import (
 	"encoding/gob"
+	"fmt"
 	"net"
 	"net/rpc"
 	"sync"
@@ -34,6 +35,10 @@ func TestHeadless(t *testing.T) {
 	s := wsrpc.New()
 	s.HandleCall("echo", func(args []byte) (any, error) { return string(args), nil })
 
+	// the last value the browser set, as an action on the server sees it
+	last := &lastValue{}
+	s.HandleCall("last", func([]byte) (any, error) { return last.get(), nil })
+
 	forms := make(chan *Form, 1)
 
 	sp_s, sp_c := net.Pipe()
@@ -41,9 +46,9 @@ func TestHeadless(t *testing.T) {
 
 	srpc := rpc.NewServer()
 	require.NoError(t, srpc.Register(s))
-	sclient := Server{Client: rpc.NewClient(sp_c)}
+	sclient := &Server{Client: rpc.NewClient(sp_c)}
 
-	b := NewHeadless(&sclient, func(name string, f *Form) {
+	b := NewHeadless(sclient, func(name string, f *Form) {
 		assert.Equal(t, "quiz", name)
 		forms <- f
 	})
@@ -88,9 +93,38 @@ func TestHeadless(t *testing.T) {
 	answers := f.Source().Value("Answers").(observable.Source)
 	assert.Equal(t, []string{"0", "1"}, answers.Keys())
 
+	// an action called straight after a set sees the value: the call waits
+	// for the set to reach the server
+	s.RemoveValueObservers("quizmaster")
+	s.AddValueObserver("quizmaster", last)
+	for n := range 20 {
+		require.NoError(t, observable.SetKeyPath(f.Source(), "Question", fmt.Sprint("q", n)))
+		res, err := sclient.CallAction("last", nil)
+		require.NoError(t, err)
+		assert.JSONEq(t, fmt.Sprintf("%q", fmt.Sprint("q", n)), string(res.Value))
+	}
+
 	// and actions answer with their results
 	res, err := sclient.CallAction("echo", []byte(`"hi"`))
 	require.NoError(t, err)
 	assert.Nil(t, res.Error)
 	assert.JSONEq(t, `"\"hi\""`, string(res.Value))
+}
+
+type lastValue struct {
+	observable.NullObserver
+	lck   sync.Mutex
+	value any
+}
+
+func (l *lastValue) SetValue(key string, value any) {
+	l.lck.Lock()
+	defer l.lck.Unlock()
+	l.value = value
+}
+
+func (l *lastValue) get() any {
+	l.lck.Lock()
+	defer l.lck.Unlock()
+	return l.value
 }

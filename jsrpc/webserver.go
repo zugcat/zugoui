@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/rpc"
 	"os"
+	"sync"
 
 	"github.com/zugcat/zugoui/wsrpc/rpctypes"
 )
@@ -13,6 +14,47 @@ import (
 // Server client stub for [wsrpc.Server]
 type Server struct {
 	*rpc.Client
+
+	// sets are the values on their way to the server, which an action waits
+	// for: a page that sets a value and calls an action straight away means
+	// the action to see it, but net/rpc runs each call on its own goroutine.
+	sets pendingSets
+}
+
+// pendingSets counts calls in flight. Adding never blocks, since the page
+// sets values from the JS event loop, which the calls' answers need.
+type pendingSets struct {
+	lck  sync.Mutex
+	idle *sync.Cond
+	n    int
+}
+
+func (p *pendingSets) add() {
+	p.lck.Lock()
+	p.n++
+	p.lck.Unlock()
+}
+
+func (p *pendingSets) done() {
+	p.lck.Lock()
+	p.n--
+	if p.n == 0 && p.idle != nil {
+		p.idle.Broadcast()
+	}
+	p.lck.Unlock()
+}
+
+// wait returns once no call is in flight
+func (p *pendingSets) wait() {
+	p.lck.Lock()
+	defer p.lck.Unlock()
+
+	if p.idle == nil {
+		p.idle = sync.NewCond(&p.lck)
+	}
+	for p.n > 0 {
+		p.idle.Wait()
+	}
 }
 
 // Observer implements the Observer interface to the server with the Action
@@ -22,8 +64,9 @@ type Observer struct {
 }
 
 // Action client side stub for function [wsrpc.Server.Action]
-func (s Server) Action(action string) {
+func (s *Server) Action(action string) {
 	go func() {
+		s.sets.wait()
 		if err := s.Call(
 			"Server.Action",
 			&rpctypes.ActionReq{
@@ -38,7 +81,9 @@ func (s Server) Action(action string) {
 
 // CallAction client side stub for function [wsrpc.Server.Call].
 // It blocks until the server answers, so call it off the JS event loop.
-func (s Server) CallAction(action string, args []byte) (*rpctypes.CallRes, error) {
+func (s *Server) CallAction(action string, args []byte) (*rpctypes.CallRes, error) {
+	s.sets.wait()
+
 	res := &rpctypes.CallRes{}
 	if err := s.Client.Call(
 		"Server.Call",
@@ -55,7 +100,10 @@ func (s Server) CallAction(action string, args []byte) (*rpctypes.CallRes, error
 
 // SetValue client stub for function [wsrpc.Server.SetValue]
 func (o Observer) SetValue(key string, value any) {
+	o.sets.add()
 	go func() {
+		defer o.sets.done()
+
 		if err := o.Call(
 			"Server.SetValue",
 			&rpctypes.SetValueReq{
