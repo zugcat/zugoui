@@ -29,13 +29,20 @@ func connection(
 	}
 	defer ws.CloseNow()
 
-	ticker := time.NewTicker(1 * time.Minute)
-	defer ticker.Stop()
+	pingCtx, stopPinging := context.WithCancel(ctx)
+	defer stopPinging()
 	go func() {
-		for range ticker.C {
-			if err := ws.Ping(ctx); err != nil {
-				fmt.Fprintf(os.Stderr, "ping: %v\n", err)
-				break
+		ticker := time.NewTicker(1 * time.Minute)
+		defer ticker.Stop()
+		for {
+			select {
+			case <-ticker.C:
+				if err := ws.Ping(pingCtx); err != nil {
+					fmt.Fprintf(os.Stderr, "ping: %v\n", err)
+					return
+				}
+			case <-pingCtx.Done():
+				return
 			}
 		}
 	}()

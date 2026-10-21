@@ -2,6 +2,8 @@
 package controller
 
 import (
+	"context"
+	"encoding/json"
 	"iter"
 	"strings"
 	"sync"
@@ -20,7 +22,15 @@ type Controller struct {
 	bindings map[string]*binding
 	actions  map[string]*actionBinding
 	prefix   string // namespace with trailing dot
+	ctx      context.Context
 }
+
+// ActionFunc handles an action the browser calls by name and waits on.
+// args is the call's JSON arguments, empty when there are none. The result
+// goes back to the browser as JSON. An error goes back with the code of the
+// first error in its chain that has a Code() string method, such as one made
+// by [ActionError], so the browser can show a translated message.
+type ActionFunc func(ctx context.Context, args json.RawMessage) (any, error)
 
 type binding struct {
 	handles   []int64 // browser side binding handles
@@ -42,6 +52,7 @@ func New(server *wsrpc.Server, browser wsrpc.Browser, namespace string) *Control
 		bindings: make(map[string]*binding),
 		actions:  make(map[string]*actionBinding),
 		prefix:   namespace + ".",
+		ctx:      context.Background(),
 	}
 	c.server.AddActionObserver(observable.NewActionObserver(func(_ string, value any) {
 		name, ok := value.(string)
@@ -84,10 +95,23 @@ func (c *Controller) Release() {
 	clear(c.bindings)
 
 	c.server.ReleaseActionObservers()
+	c.server.ReleaseCalls()
 	for _, v := range c.actions {
 		c.Browser.Unbind(v.handle)
 	}
 	clear(c.actions)
+}
+
+// HandleAction answers calls to an action from the browser, which waits for
+// fn's result. Unlike [Controller.BindAction], it binds no element, so a page
+// that renders its own controls can call it.
+//
+// Handle actions before binding values: a page that renders its own form
+// takes a bound form as ready, and may call an action straight away.
+func (c *Controller) HandleAction(action string, fn ActionFunc) {
+	c.server.HandleCall(action, func(args []byte) (any, error) {
+		return fn(c.ctx, args)
+	})
 }
 
 func (c *Controller) BindAction(element, action string, target func(string)) (err error) {

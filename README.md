@@ -56,6 +56,27 @@ func (c ContactForm) ValidateModel() error {
 - Send CustomEvent objects from the server.
 - Easily turn instances of go types into js friendly versions, and back again.
 
+## Headless pages
+
+A page that renders its own DOM, such as a React page, can't share it with
+zugoui's element bindings. For those, the wasm's main calls `browser.Serve`
+instead of `browser.Main`, and the page drives zugoui itself:
+
+```
+const session = await zugoui.connect("/app/rpc")
+const form = session.form("contact")    // the model the server bound as form "contact"
+form.getSnapshot()                      // its values, by json name
+form.set("Email", "me@example.com")     // validated in the browser, then sent on
+form.getErrors()                        // { Email: { code: "email", message: "..." } }
+const result = await session.action("submit")   // { ok: true, value } or { ok: false, error }
+session.close()
+```
+
+The server is unchanged, apart from the actions: `Controller.HandleAction`
+answers a call by name with a result, where `BindAction` only reacts to a
+click. Errors with a `Code() string` method reach the page with that code, so
+it can show a translated message.
+
 ## More to come
 This repository will be updated with a full readme and documentation
 

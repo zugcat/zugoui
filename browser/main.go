@@ -56,13 +56,7 @@ func Main(ctx context.Context, endpoint string) (err error) {
 		endpoint = "rpc"
 	}
 
-	// from the location this page loaded, connect back at the same path+endpoint
-	window := js.Global().Get("window").Get("location")
-	wspath := endpoint
-	if !strings.HasPrefix(wspath, "/") {
-		wspath = path.Join(window.Get("pathname").String(), wspath)
-	}
-	u, err := url.Parse(window.Get("origin").String() + wspath)
+	u, err := endpointURL(endpoint)
 	if err != nil {
 		return err
 	}
@@ -82,7 +76,7 @@ func Main(ctx context.Context, endpoint string) (err error) {
 	}
 
 	for {
-		if err := connection(ctx, u.String(), server, rpcServer, func() {
+		if err := connection(ctx, u, server, rpcServer, func() {
 			ready := js.Global().Get("zugouiReady")
 			if ready.Type() == js.TypeFunction {
 				ready.Invoke(browser.JsObject())
@@ -94,4 +88,20 @@ func Main(ctx context.Context, endpoint string) (err error) {
 		}
 		time.Sleep(15 * time.Second)
 	}
+}
+
+// endpointURL resolves an endpoint against the page's location: an absolute
+// path is on the page's origin, and a relative one is relative to the page's
+// path, as it was before the page navigated anywhere itself.
+func endpointURL(endpoint string) (string, error) {
+	location := js.Global().Get("window").Get("location")
+	wspath := endpoint
+	if !strings.HasPrefix(wspath, "/") {
+		wspath = path.Join(location.Get("pathname").String(), wspath)
+	}
+	u, err := url.Parse(location.Get("origin").String() + wspath)
+	if err != nil {
+		return "", err
+	}
+	return u.String(), nil
 }

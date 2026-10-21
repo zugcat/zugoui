@@ -30,6 +30,7 @@ func Start(ctx context.Context, ws *websocket.Conn) (c *Controller, done <-chan 
 	// rpc client to the browser
 	browser := wsrpc.Browser{Client: rpc.NewClient(ep1)}
 	c = New(s, browser, uuid.NewString())
+	c.ctx = ctx
 
 	doneC := make(chan struct{})
 
